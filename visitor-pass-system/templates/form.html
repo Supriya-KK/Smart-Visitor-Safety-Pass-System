@@ -7,11 +7,22 @@
 <body>
   <h2>Register as Visitor</h2>
   <form action="/submit" method="POST">
-    Name: <input type="text" name="name"><br>
-    Phone: <input type="text" name="phone"><br>
-    Reason: <input type="text" name="reason"><br>
-    Host Name: <input type="text" name="host"><br>
+    Name: <input type="text" name="name" required><br>
+    Phone: <input type="text" name="phone" pattern="[0-9]{10}" required><br>
+    Reason: <input type="text" name="reason" required><br>
+    Host Name: <input type="text" name="host" required><br>
+  
+    <label>Plant / Area to Visit:</label>
+    <select name="area" required>
+      <option value="">-- Select Plant --</option>
+      <option value="Steel Melting Shop">Steel Melting Shop</option>
+      <option value="Power Plant">Power Plant</option>
+      <option value="Rolling Mill">Rolling Mill</option>
+      <option value="Admin Office">Admin Office</option>
+    </select><br>
+  
     <button type="submit">Submit</button>
   </form>
+  
 </body>
 </html>

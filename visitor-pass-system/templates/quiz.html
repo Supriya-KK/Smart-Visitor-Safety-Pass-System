@@ -7,10 +7,20 @@
 <body>
   <h2>Safety Quiz</h2>
   <form method="POST">
-    Q: Is helmet mandatory inside the plant?<br>
-    <input type="radio" name="q1" value="yes"> Yes<br>
-    <input type="radio" name="q1" value="no"> No<br>
-    <button type="submit">Submit</button>
+    <h3>1. Is helmet mandatory inside the plant?</h3>
+    <input type="radio" name="q1" value="yes" required> Yes
+    <input type="radio" name="q1" value="no"> No
+  
+    <h3>2. Should you wear safety shoes in hazard areas?</h3>
+    <input type="radio" name="q2" value="yes" required> Yes
+    <input type="radio" name="q2" value="no"> No
+  
+    <h3>3. Is PPE required near molten metal units?</h3>
+    <input type="radio" name="q3" value="yes" required> Yes
+    <input type="radio" name="q3" value="no"> No
+  
+    <br><button type="submit">Submit</button>
   </form>
+  
 </body>
 </html>

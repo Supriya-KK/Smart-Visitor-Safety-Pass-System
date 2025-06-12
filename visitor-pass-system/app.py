@@ -47,8 +47,12 @@ def submit():
 @app.route('/quiz/<int:visitor_id>', methods=['GET', 'POST'])
 def quiz(visitor_id):
     if request.method == 'POST':
-        answer = request.form.get('q1')
-        if answer == 'yes':
+        q1 = request.form.get('q1')
+        q2 = request.form.get('q2')
+        q3 = request.form.get('q3')
+
+        # Check if all answers are correct
+        if q1 == 'yes' and q2 == 'yes' and q3 == 'yes':
             conn = sqlite3.connect(DB_NAME)
             c = conn.cursor()
             c.execute("UPDATE visitors SET quiz_passed = 1 WHERE id = ?", (visitor_id,))
@@ -56,8 +60,12 @@ def quiz(visitor_id):
             conn.close()
             return redirect(url_for('generate_qr', visitor_id=visitor_id))
         else:
-            return "Quiz Failed. Try again."
-    return render_template('quiz.html', visitor_id=visitor_id)
+            return """
+                <h2>❌ Quiz Failed</h2>
+                <p>Please follow all safety protocols to continue.</p>
+                <a href='/'>Back to Home</a>
+            """
+    return render_template('quiz.html')
 
 @app.route('/qr/<int:visitor_id>')
 def generate_qr(visitor_id):
@@ -84,6 +92,16 @@ def checkin(visitor_id):
     conn.commit()
     conn.close()
     return redirect(url_for('admin'))
+
+@app.route('/debug')
+def debug():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM visitors")
+    data = c.fetchall()
+    conn.close()
+    return {'data': data}
+
 
 if __name__ == '__main__':
     app.run(debug=True)
