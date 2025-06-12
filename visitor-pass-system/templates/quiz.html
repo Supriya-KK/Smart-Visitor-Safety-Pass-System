@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Safety Quiz</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+  <h2>Safety Quiz</h2>
+  <form method="POST">
+    Q: Is helmet mandatory inside the plant?<br>
+    <input type="radio" name="q1" value="yes"> Yes<br>
+    <input type="radio" name="q1" value="no"> No<br>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
