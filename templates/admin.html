@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Panel</title></head>
+<body>
+  <h2>Visitor Logs</h2>
+  <table border="1">
+    <tr>
+      <th>ID</th><th>Name</th><th>Phone</th><th>Host</th>
+      <th>Quiz</th><th>Status</th><th>Action</th>
+    </tr>
+    {% for row in data %}
+    <tr>
+      <td>{{ row[0] }}</td><td>{{ row[1] }}</td><td>{{ row[2] }}</td>
+      <td>{{ row[4] }}</td><td>{{ 'Yes' if row[5] else 'No' }}</td>
+      <td>{{ row[6] }}</td>
+      <td>
+        {% if row[6] != 'Checked In' %}
+          <a href="/checkin/{{ row[0] }}">Check In</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
