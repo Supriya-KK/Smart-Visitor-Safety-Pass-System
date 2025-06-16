@@ -47,7 +47,8 @@ def home():
 
 @app.route('/about')
 def about():
-    return "<h2>About Us</h2><p>This is a smart visitor system for safety and tracking.</p>"
+    return render_template('about.html')
+
 
 @app.route('/profile')
 def profile():

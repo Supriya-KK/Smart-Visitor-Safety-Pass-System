@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - Smart Visitor System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .about-section {
+            max-width: 850px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-section h1 {
+            color: #2980b9;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .about-section p {
+            font-size: 17px;
+            color: #333;
+            line-height: 1.7;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .about-section ul {
+            list-style: square;
+            margin-left: 20px;
+            padding-left: 10px;
+        }
+
+        .about-section ul li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'header.html' %}
+
+    <div class="about-section">
+        <h1>About Us</h1>
+        <p>
+            Welcome to the <strong>Smart Visitor and Safety Pass System</strong> — a modern solution designed for enhancing safety and security within industrial campuses and office environments.
+        </p>
+        <p>
+            This system allows visitors to check in securely, helps organizations track their movements, and issues digital safety passes for improved compliance and monitoring.
+        </p>
+        <p>🚀 Key Features:</p>
+        <ul>
+            <li>Secure visitor registration and check-in</li>
+            <li>QR-based digital visitor pass</li>
+            <li>Real-time visitor tracking</li>
+            <li>Area-wise access selection (like Power Plant, Rolling Mill)</li>
+            <li>Admin login for analytics and reports</li>
+        </ul>
+       
+    </div>
+
+    {% include 'footer.html' %}
+
+</body>
+</html>
