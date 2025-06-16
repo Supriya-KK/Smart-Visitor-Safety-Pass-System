@@ -5,28 +5,41 @@ import qrcode
 import io
 app = Flask(__name__)
 app.secret_key = 'my_secret_visitor_pass_2025'
+
 DB_NAME = 'database.db'
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS visitors (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        phone TEXT,
+        reason TEXT,
+        host TEXT,
+        quiz_passed INTEGER,
+        checkin_status TEXT
+    )''')
+    conn.commit()
+    conn.close()
 
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT,
-                    phone TEXT,
-                    reason TEXT,
-                    host TEXT,
-                    quiz_passed INTEGER,
-                    checkin_status TEXT,
-                    checkin_time TEXT,
-                    checkout_time TEXT
-                )''')
-
+def update_schema():
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    try:
+        c.execute("ALTER TABLE visitors ADD COLUMN checkin_time TEXT")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        c.execute("ALTER TABLE visitors ADD COLUMN checkout_time TEXT")
+    except sqlite3.OperationalError:
+        pass
     conn.commit()
     conn.close()
 
 init_db()
+update_schema()
+
 
 @app.route('/')
 def home():
@@ -50,13 +63,18 @@ def submit():
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("INSERT INTO visitors (name, phone, reason, host, area, quiz_passed, checkin_status, checkin_time, checkout_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-              (name, phone, reason, host, area, 0, 'Not Checked In', ", "))
+    c.execute("""
+        INSERT INTO visitors 
+        (name, phone, reason, host, area, quiz_passed, checkin_status, checkin_time, checkout_time) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (name, phone, reason, host, area, 0, 'Not Checked In', None, None))
+    
     visitor_id = c.lastrowid
     conn.commit()
     conn.close()
 
     return redirect(url_for('quiz', visitor_id=visitor_id))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

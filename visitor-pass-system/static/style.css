@@ -54,7 +54,6 @@ body {
     border: 1px solid #ddd;
     text-align: center;
   }
-<<<<<<< HEAD
   
   /* PPE Area Header */
 .ppe-header {
@@ -116,19 +115,10 @@ body {
   padding: 20px;
   margin: 20px auto;
   max-width: 700px;
-=======
-
-  form {
-  background: white;
-  padding: 20px;
-  margin: 0 auto;
-  max-width: 400px;
->>>>>>> 67e101af3d11d16bc07220da752f181da100661d
   border-radius: 10px;
   box-shadow: 0 0 10px #ccc;
 }
 
-<<<<<<< HEAD
 .quiz-section h3 {
   margin-bottom: 10px;
   color: #2980b9;
@@ -163,33 +153,5 @@ input[type="checkbox"] {
 }
 
 .quiz-section button[type="submit"]:hover {
-=======
-form label {
-  display: block;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-input[type="text"],
-input[type="password"],
-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-button {
-  background-color: #2980b9;
-  color: white;
-  font-weight: bold;
-  margin-top: 15px;
-  cursor: pointer;
-}
-
-button:hover {
->>>>>>> 67e101af3d11d16bc07220da752f181da100661d
   background-color: #3498db;
 }

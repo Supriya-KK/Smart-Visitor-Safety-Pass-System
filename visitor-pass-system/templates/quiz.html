@@ -6,8 +6,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<<<<<<< HEAD
-
+    {% include 'header.html' %}
     <div class="ppe-header">
         <h2>PPE Instructions for {{ area }}</h2>
     </div>
@@ -45,26 +44,6 @@
 
         <button type="submit">Submit</button>
     </form>
-
-=======
-  {% include 'header.html' %}
-  <h2>Safety Quiz</h2>
-  <form method="POST">
-    <h3>1. Is helmet mandatory inside the plant?</h3>
-    <input type="radio" name="q1" value="yes" required> Yes
-    <input type="radio" name="q1" value="no"> No
-  
-    <h3>2. Should you wear safety shoes in hazard areas?</h3>
-    <input type="radio" name="q2" value="yes" required> Yes
-    <input type="radio" name="q2" value="no"> No
-  
-    <h3>3. Is PPE required near molten metal units?</h3>
-    <input type="radio" name="q3" value="yes" required> Yes
-    <input type="radio" name="q3" value="no"> No
-  
-    <br><button type="submit">Submit</button>
-  </form>
-  {% include 'footer.html' %}
->>>>>>> 67e101af3d11d16bc07220da752f181da100661d
+    {% include 'footer.html' %}
 </body>
 </html>
