@@ -5,6 +5,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
+  {% include 'header.html' %}
+
   <h2>Visitor Logs</h2>
   <table border="1">
     <tr>
@@ -24,5 +27,53 @@
     </tr>
     {% endfor %}
   </table>
+
+<h2>Admin Dashboard - Visitor Logs</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Host</th>
+      <th>Area</th>
+      <th>Reason</th>
+      <th>Quiz</th>
+      <th>Status</th>
+      <th>Check-In Time</th>
+      <th>Check-Out Time</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in data %}
+    <tr>
+      <td>{{ row[0] }}</td>
+      <td>{{ row[1] }}</td>
+      <td>{{ row[2] }}</td>
+      <td>{{ row[4] }}</td>
+      <td>{{ row[5] }}</td>
+      <td>{{ row[3] }}</td>
+      <td>{{ '✅ Passed' if row[6] else '❌ Failed' }}</td>
+      <td>{{ row[7] }}</td>
+      <td>{{ row[8] if row[8] else '-' }}</td>
+      <td>{{ row[9] if row[9] else '-' }}</td>
+      <td>
+        {% if row[7] == 'Not Checked In' %}
+          <a href="/checkin/{{ row[0] }}"><button>Check In</button></a>
+        {% elif row[7] == 'Checked In' and not row[9] %}
+          <a href="/checkout/{{ row[0] }}"><button>Check Out</button></a>
+        {% else %}
+          ✔ Done
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+  {% include 'footer.html' %}
+
 </body>
 </html>

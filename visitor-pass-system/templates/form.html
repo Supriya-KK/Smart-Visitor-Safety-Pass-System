@@ -5,6 +5,7 @@
 
 </head>
 <body>
+  {% include 'header.html' %}
   <h2>Register as Visitor</h2>
   <form action="/submit" method="POST">
     Name: <input type="text" name="name" required><br>
@@ -23,6 +24,7 @@
   
     <button type="submit">Submit</button>
   </form>
+  {% include 'footer.html' %}
   
 </body>
 </html>
