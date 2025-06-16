@@ -1,26 +1,49 @@
 <!DOCTYPE html>
-<html>
-<head><title>Safety Quiz</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PPE Instructions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h2>Safety Quiz</h2>
-  <form method="POST">
-    <h3>1. Is helmet mandatory inside the plant?</h3>
-    <input type="radio" name="q1" value="yes" required> Yes
-    <input type="radio" name="q1" value="no"> No
-  
-    <h3>2. Should you wear safety shoes in hazard areas?</h3>
-    <input type="radio" name="q2" value="yes" required> Yes
-    <input type="radio" name="q2" value="no"> No
-  
-    <h3>3. Is PPE required near molten metal units?</h3>
-    <input type="radio" name="q3" value="yes" required> Yes
-    <input type="radio" name="q3" value="no"> No
-  
-    <br><button type="submit">Submit</button>
-  </form>
-  
+
+    <div class="ppe-header">
+        <h2>PPE Instructions for {{ area }}</h2>
+    </div>
+
+    <!-- PPE Images -->
+    <div class="ppe-gallery">
+        {% for img in ppe_images %}
+            <img src="{{ url_for('static', filename=img) }}" alt="PPE Image">
+        {% endfor %}
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions">
+        <h3>Instructions</h3>
+        <ul>
+            {% for line in instructions %}
+                <li>{{ line }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Quiz Form -->
+    <form method="post" class="quiz-section">
+        <label>
+            <input type="checkbox" name="acknowledged" required>
+            I have read and understood the PPE instructions.
+        </label>
+
+        <h3>Quiz Questions</h3>
+        {% for i in range(questions|length) %}
+            <p>Q{{ i+1 }}: {{ questions[i] }}</p>
+            <label><input type="radio" name="q{{ i+1 }}" value="yes" required> Yes</label>
+            <label><input type="radio" name="q{{ i+1 }}" value="no"> No</label>
+        {% endfor %}
+
+        <button type="submit">Submit</button>
+    </form>
+
 </body>
 </html>

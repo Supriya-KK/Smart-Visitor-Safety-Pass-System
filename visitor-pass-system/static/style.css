@@ -55,3 +55,103 @@ body {
     text-align: center;
   }
   
+  /* PPE Area Header */
+.ppe-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.ppe-header h2 {
+  font-size: 28px;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+/* Image gallery for PPE */
+.ppe-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.ppe-gallery img {
+  width: 180px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.ppe-gallery img:hover {
+  transform: scale(1.05);
+}
+
+/* Instructions styling */
+.instructions {
+  background: #fff;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 700px;
+  border-left: 5px solid #2980b9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #ddd;
+}
+
+.instructions h3 {
+  margin-bottom: 10px;
+  color: #2980b9;
+}
+
+.instructions ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+/* Quiz questions */
+.quiz-section {
+  background: #fff;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 700px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.quiz-section h3 {
+  margin-bottom: 10px;
+  color: #2980b9;
+}
+
+.quiz-section label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: 500;
+}
+
+input[type="radio"] {
+  width: auto;
+  margin-right: 8px;
+}
+
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+/* Submit button style */
+.quiz-section button[type="submit"] {
+  margin-top: 15px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quiz-section button[type="submit"]:hover {
+  background-color: #3498db;
+}
