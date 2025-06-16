@@ -67,16 +67,9 @@ def login():
             session['user'] = username
             return redirect(url_for('admin'))
         else:
-            return "❌ Invalid credentials. <a href='/login'>Try again</a>"
-
-    return '''
-        <h2>Login</h2>
-        <form method="post">
-            Username: <input type="text" name="username" required><br>
-            Password: <input type="password" name="password" required><br>
-            <button type="submit">Login</button>
-        </form>
-    '''
+            return render_template('login.html', error="❌Invalid credentials...Try again")
+        
+    return render_template('login.html')
 
 @app.route('/logout', methods=['POST'])
 def logout():
