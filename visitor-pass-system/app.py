@@ -1,9 +1,8 @@
+import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_file, session
-from datetime import datetime
 import sqlite3
 import qrcode
 import io
-
 app = Flask(__name__)
 app.secret_key = 'my_secret_visitor_pass_2025'
 DB_NAME = 'database.db'
@@ -12,18 +11,7 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS visitors (
-<<<<<<< HEAD
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        phone TEXT,
-        reason TEXT,
-        host TEXT,
-        area TEXT,
-        quiz_passed INTEGER,
-        checkin_status TEXT
-        )''')
 
-=======
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT,
                     phone TEXT,
@@ -34,7 +22,7 @@ def init_db():
                     checkin_time TEXT,
                     checkout_time TEXT
                 )''')
->>>>>>> 67e101af3d11d16bc07220da752f181da100661d
+
     conn.commit()
     conn.close()
 
@@ -59,29 +47,17 @@ def submit():
     reason = request.form['reason']
     host = request.form['host']
     area = request.form['area']
-<<<<<<< HEAD
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    
-    c.execute("INSERT INTO visitors (name, phone, reason, host, area, quiz_passed, checkin_status) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          (name, phone, reason, host, area, 0, 'Not Checked In'))
-
-=======
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("INSERT INTO visitors (name, phone, reason, host, area, quiz_passed, checkin_status, checkin_time, checkout_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
               (name, phone, reason, host, area, 0, 'Not Checked In', ", "))
->>>>>>> 67e101af3d11d16bc07220da752f181da100661d
     visitor_id = c.lastrowid
     conn.commit()
     conn.close()
 
     return redirect(url_for('quiz', visitor_id=visitor_id))
 
-<<<<<<< HEAD
-@app.route("/quiz/<int:visitor_id>", methods=["GET", "POST"])
-=======
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -102,7 +78,6 @@ def logout():
     return redirect(url_for('home'))   
 
 @app.route('/quiz/<int:visitor_id>', methods=['GET', 'POST'])
->>>>>>> 67e101af3d11d16bc07220da752f181da100661d
 def quiz(visitor_id):
     import os
     conn = sqlite3.connect(DB_NAME)
@@ -191,9 +166,6 @@ def generate_qr(visitor_id):
 
 @app.route('/admin')
 def admin():
-    if session.get('user') != 'admin':
-        return "<h3>❌ Unauthorized Access</h3><p>You must be logged in as admin to view this page.</p><a href='/login'>Login as Admin</a>"
-    
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("SELECT * FROM visitors")
@@ -233,6 +205,7 @@ def debug():
     data = c.fetchall()
     conn.close()
     return {'data': data}
+
 
 if __name__ == '__main__':
     app.run(debug=True)
