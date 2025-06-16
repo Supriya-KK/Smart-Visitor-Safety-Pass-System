@@ -174,8 +174,31 @@ def quiz(visitor_id):
                            ppe_images=ppe_images, instructions=instructions, questions=questions)
 
 
+# @app.route('/qr/<int:visitor_id>')
+# def generate_qr(visitor_id):
+#     img = qrcode.make(f"VisitorID:{visitor_id}")
+#     buf = io.BytesIO()
+#     img.save(buf)
+#     buf.seek(0)
+#     return send_file(buf, mimetype='image/png')
+
 @app.route('/qr/<int:visitor_id>')
 def generate_qr(visitor_id):
+    return redirect(url_for('visitor_profile', visitor_id=visitor_id))
+
+@app.route('/profile/<int:visitor_id>')
+def visitor_profile(visitor_id):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("SELECT * FROM visitors WHERE id = ?", (visitor_id,))
+    visitor = c.fetchone()
+    conn.close()
+    if not visitor:
+        return "<h3>Visitor not found.</h3>"
+    return render_template('profile.html', visitor=visitor)
+
+@app.route('/qr_image/<int:visitor_id>')
+def qr_image(visitor_id):
     img = qrcode.make(f"VisitorID:{visitor_id}")
     buf = io.BytesIO()
     img.save(buf)

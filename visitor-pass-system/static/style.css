@@ -155,3 +155,41 @@ input[type="checkbox"] {
 .quiz-section button[type="submit"]:hover {
   background-color: #3498db;
 }
+
+.visitor-card {
+  background-color: white;
+  padding: 20px;
+  max-width: 400px;
+  margin: 20px auto;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+  text-align: center;
+}
+
+.visitor-card p {
+  margin: 5px 0;
+}
+
+.visitor-card img {
+  width: 200px;
+  height: 200px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #visitor-pass, #visitor-pass * {
+    visibility: visible;
+  }
+
+  #visitor-pass {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    box-shadow: none;
+  }
+}

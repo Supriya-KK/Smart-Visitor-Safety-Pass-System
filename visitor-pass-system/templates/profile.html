@@ -1,0 +1,21 @@
+{% include 'header.html' %}
+
+<h2>Your Visitor Pass</h2>
+
+<div class="visitor-card" id="visitor-pass">
+  <h3>👤 {{ visitor[1] }}</h3>
+  <p>📱 Phone: {{ visitor[2] }}</p>
+  <p>🧑‍💼 Host: {{ visitor[4] }}</p>
+  <p>📍 Area: {{ visitor[5] }}</p>
+  <p>📝 Reason: {{ visitor[3] }}</p>
+  <p>🕑 Check-In: {{ visitor[8] or 'Pending' }}</p>
+  <p>🔓 Status: {{ visitor[7] }}</p>
+
+  <img src="{{ url_for('qr_image', visitor_id=visitor[0]) }}" alt="QR Code" style="margin-top: 20px;">
+</div>
+
+<div style="text-align: center; margin-top: 20px;">
+  <button onclick="window.print()">🖨️ Print PDF</button>
+</div>
+
+{% include 'footer.html' %}
