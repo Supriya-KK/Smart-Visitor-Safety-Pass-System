@@ -38,8 +38,8 @@
         <h3>Quiz Questions</h3>
         {% for i in range(questions|length) %}
             <p>Q{{ i+1 }}: {{ questions[i] }}</p>
-            <label><input type="radio" name="q{{ i+1 }}" value="yes" required> Yes</label>
-            <label><input type="radio" name="q{{ i+1 }}" value="no"> No</label>
+            <label><input type="radio" name="q{{ i+1 }}" value="YES" required> YES</label>
+            <label><input type="radio" name="q{{ i+1 }}" value="NO"> NO</label>
         {% endfor %}
 
         <button type="submit">Submit</button>

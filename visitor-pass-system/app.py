@@ -1,8 +1,10 @@
 import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_file, session
+from datetime import datetime
 import sqlite3
 import qrcode
 import io
+
 app = Flask(__name__)
 app.secret_key = 'my_secret_visitor_pass_2025'
 
@@ -34,11 +36,17 @@ def update_schema():
         c.execute("ALTER TABLE visitors ADD COLUMN checkout_time TEXT")
     except sqlite3.OperationalError:
         pass
+    try:
+        c.execute("ALTER TABLE visitors ADD COLUMN start_date TEXT")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        c.execute("ALTER TABLE visitors ADD COLUMN end_date TEXT")
+    except sqlite3.OperationalError:
+        pass
     conn.commit()
     conn.close()
 
-init_db()
-update_schema()
 
 
 @app.route('/')
@@ -50,9 +58,9 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/profile')
-def profile():
-    return "<h2>Admin Profile</h2><p>Welcome, Admin!</p>"
+#@app.route('/profile')
+#def profile():
+ #   return "<h2>Admin Profile</h2><p>Welcome, Admin!</p>"
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -61,20 +69,37 @@ def submit():
     reason = request.form['reason']
     host = request.form['host']
     area = request.form['area']
+    start_date = request.form['start_date']
+    end_date = request.form['end_date']
+
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("""
         INSERT INTO visitors 
-        (name, phone, reason, host, area, quiz_passed, checkin_status, checkin_time, checkout_time) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (name, phone, reason, host, area, 0, 'Not Checked In', None, None))
+        (name, phone, reason, host, area, quiz_passed, checkin_status, checkin_time, checkout_time, start_date, end_date) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (name, phone, reason, host, area, 0, 'Not Checked In', None, None, start_date, end_date))
+
     
     visitor_id = c.lastrowid
     conn.commit()
     conn.close()
 
+    # 👇 Save visitor_id to session
+    session['visitor_id'] = visitor_id
+
+    # 👇 Redirect to profile page first
     return redirect(url_for('quiz', visitor_id=visitor_id))
+
+@app.route('/admin')
+def admin():
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("SELECT * FROM visitors")
+    visitors = c.fetchall()
+    conn.close()
+    return render_template('admin.html', data=visitors)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -102,7 +127,6 @@ def quiz(visitor_id):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
 
-    # Get area from database
     c.execute("SELECT area FROM visitors WHERE id = ?", (visitor_id,))
     row = c.fetchone()
     area = row[0] if row else None
@@ -110,34 +134,11 @@ def quiz(visitor_id):
     if not area:
         return "Area not found for this visitor", 404
 
-    # POST: If form submitted
-    if request.method == "POST":
-        # You could validate answers here if needed
-        c.execute("UPDATE visitors SET quiz_passed = 1 WHERE id = ?", (visitor_id,))
-        conn.commit()
-        conn.close()
-        return redirect(url_for("generate_qr", visitor_id=visitor_id))
-
-    # GET: Show quiz form
     area_path_map = {
         "Power Plant": "PPE/Power-Plant/",
         "Rolling Mill": "PPE/Rolling Mill/",
-        "Steel Melting Shop": "PPE/Steel-Melting-Shop/"
+        "Steel Melting Shop": "PPE/Steel-Melting-Shop/",
     }
-
-    image_dir = area_path_map.get(area)
-    if not image_dir:
-        return f"No PPE folder found for area: {area}", 404
-
-    static_folder = os.path.join(app.root_path, "static")
-    full_image_path = os.path.join(static_folder, image_dir)
-
-    try:
-        image_files = os.listdir(full_image_path)
-    except FileNotFoundError:
-        image_files = []
-
-    ppe_images = [f"{image_dir}{img}" for img in image_files if img.lower().endswith(('.jpg', '.jpeg', '.png', '.avif'))]
 
     instruction_map = {
         "Power Plant": [
@@ -161,27 +162,57 @@ def quiz(visitor_id):
             "Avoid flammable materials near molten metal.",
             "Stay hydrated and avoid direct contact with hot surfaces.",
             "Report burns or injuries immediately to your supervisor."
+        ],
+        "Admin Office": [
+            "Maintain decorum while on office premises.",
+            "ID cards must be visibly worn.",
+            "Visitors must stay in designated areas.",
+            "Photography is strictly prohibited inside the office.",
+            "Do not tamper with office equipment or files."
         ]
     }
 
-    instructions = instruction_map.get(area, [])
     questions = [
         "Are you wearing the correct PPE?",
         "Do you understand emergency protocols?",
         "Will you report unsafe conditions?"
     ]
 
+    image_dir = area_path_map.get(area)
+    static_folder = os.path.join(app.root_path, "static")
+    full_image_path = os.path.join(static_folder, image_dir) if image_dir else ""
+
+    try:
+        image_files = os.listdir(full_image_path)
+    except FileNotFoundError:
+        image_files = []
+
+    ppe_images = [f"{image_dir}{img}" for img in image_files if img.lower().endswith(('.jpg', '.jpeg', '.png', '.avif'))]
+
+    if request.method == "POST":
+        answers = [request.form.get(f"q{i+1}") for i in range(len(questions))]
+        if all(ans == "YES" for ans in answers):
+            c.execute("UPDATE visitors SET quiz_passed = 1 WHERE id = ?", (visitor_id,))
+            conn.commit()
+            conn.close()
+            return redirect(url_for("generate_qr", visitor_id=visitor_id))
+        else:
+            conn.close()
+            return render_template("quiz_fail.html", area=area, visitor_id=visitor_id)
+
+    conn.close()
+    instructions = instruction_map.get(area, [])
     return render_template("quiz.html", visitor_id=visitor_id, area=area,
                            ppe_images=ppe_images, instructions=instructions, questions=questions)
 
 
-# @app.route('/qr/<int:visitor_id>')
-# def generate_qr(visitor_id):
-#     img = qrcode.make(f"VisitorID:{visitor_id}")
-#     buf = io.BytesIO()
-#     img.save(buf)
-#     buf.seek(0)
-#     return send_file(buf, mimetype='image/png')
+    # @app.route('/qr/<int:visitor_id>')
+    # def generate_qr(visitor_id):
+    #     img = qrcode.make(f"VisitorID:{visitor_id}")
+    #     buf = io.BytesIO()
+    #     img.save(buf)
+    #     buf.seek(0)
+    #     return send_file(buf, mimetype='image/png')
 
 @app.route('/qr/<int:visitor_id>')
 def generate_qr(visitor_id):
@@ -189,6 +220,9 @@ def generate_qr(visitor_id):
 
 @app.route('/profile/<int:visitor_id>')
 def visitor_profile(visitor_id):
+    if session.get('visitor_id') != visitor_id:
+        return "❌ Access denied. You are not authorized to view this profile.", 403
+
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("SELECT * FROM visitors WHERE id = ?", (visitor_id,))
@@ -196,48 +230,20 @@ def visitor_profile(visitor_id):
     conn.close()
     if not visitor:
         return "<h3>Visitor not found.</h3>"
+
     return render_template('profile.html', visitor=visitor)
 
-@app.route('/qr_image/<int:visitor_id>')
-def qr_image(visitor_id):
-    img = qrcode.make(f"VisitorID:{visitor_id}")
-    buf = io.BytesIO()
-    img.save(buf)
-    buf.seek(0)
-    return send_file(buf, mimetype='image/png')
 
-@app.route('/admin')
-def admin():
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT * FROM visitors")
-    data = c.fetchall()
-    conn.close()
-    return render_template('admin.html', data=data)
-
-@app.route('/checkin/<int:visitor_id>')
-def checkin(visitor_id):
-    if session.get('user') != 'admin':
-        return "❌ Unauthorized", 403
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("UPDATE visitors SET checkin_status = 'Checked In', checkin_time = ? WHERE id = ?", (now, visitor_id,))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('admin'))
 
 @app.route('/checkout/<int:visitor_id>')
-def checkout(visitor_id):
-    if session.get('user') != 'admin':
-        return "❌ Unauthorized", 403
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+def handle_checkout(visitor_id):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("UPDATE visitors SET checkin_status = 'Checked Out', checkout_time = ? WHERE id = ?", (now, visitor_id))
+    checkout_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    c.execute("UPDATE visitors SET status='Checked Out', checkout_time=? WHERE id=?", (checkout_time, visitor_id))
     conn.commit()
     conn.close()
-    return redirect(url_for('admin'))
+    return redirect('/admin')
 
 @app.route('/debug')
 def debug():
@@ -247,6 +253,36 @@ def debug():
     data = c.fetchall()
     conn.close()
     return {'data': data}
+
+@app.route('/qr_image/<int:visitor_id>')
+def qr_image(visitor_id):
+    # 👇 QR should link to checkin route
+    checkin_url = url_for('handle_checkin', visitor_id=visitor_id, _external=True)
+
+    # ✅ Generate QR code with that URL
+    img = qrcode.make(checkin_url)
+
+    # Convert QR to byte stream for displaying
+    buf = io.BytesIO()
+    img.save(buf)
+    buf.seek(0)
+
+    return send_file(buf, mimetype='image/png')
+
+@app.route('/checkin/<int:visitor_id>')
+def handle_checkin(visitor_id):  # 👈 new name
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+
+    from datetime import datetime
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    c.execute("UPDATE visitors SET checkin_time = ?, checkin_status = ? WHERE id = ?", 
+              (now, 'Checked In', visitor_id))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('profile', visitor_id=visitor_id))
 
 
 if __name__ == '__main__':

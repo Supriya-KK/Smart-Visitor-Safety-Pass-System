@@ -1,21 +1,87 @@
 {% include 'header.html' %}
 
-<h2>Your Visitor Pass</h2>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    padding: 30px;
+  }
+
+  .visitor-card {
+    max-width: 500px;
+    margin: auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  .visitor-card h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+
+  .visitor-card p {
+    font-size: 16px;
+    margin: 8px 0;
+    color: #555;
+  }
+
+  img {
+    max-width: 200px;
+    margin-top: 20px;
+  }
+
+  .actions {
+    text-align: center;
+    margin-top: 25px;
+  }
+
+  .actions button, .actions a {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    margin: 0 10px;
+    cursor: pointer;
+  }
+
+  .actions button:hover, .actions a:hover {
+    background-color: #0056b3;
+  }
+</style>
 
 <div class="visitor-card" id="visitor-pass">
+  <h2>🎫 Your Visitor Pass</h2>
   <h3>👤 {{ visitor[1] }}</h3>
   <p>📱 Phone: {{ visitor[2] }}</p>
   <p>🧑‍💼 Host: {{ visitor[4] }}</p>
-  <p>📍 Area: {{ visitor[5] }}</p>
+  <p>📍 Area: {{ visitor[7] }}</p>
   <p>📝 Reason: {{ visitor[3] }}</p>
-  <p>🕑 Check-In: {{ visitor[8] or 'Pending' }}</p>
-  <p>🔓 Status: {{ visitor[7] }}</p>
+  <!--<p>🕑 Check-In: 
+    {% if visitor[8] %}
+      {{ visitor[8] }}
+    {% else %}
+      Pending
+    {% endif %}
+  </p>-->
+  
+  <!--<p>Status: {{ 'Checked In at ' + checkin_time if checkin_time else 'Pending' }}</p> -->
 
-  <img src="{{ url_for('qr_image', visitor_id=visitor[0]) }}" alt="QR Code" style="margin-top: 20px;">
+
+
+  <img src="{{ url_for('qr_image', visitor_id=visitor[0]) }}">
+
 </div>
 
-<div style="text-align: center; margin-top: 20px;">
+<div class="actions">
   <button onclick="window.print()">🖨️ Print PDF</button>
+  <a href="{{ url_for('home') }}">⬅️ Back to Home</a>
 </div>
 
 {% include 'footer.html' %}

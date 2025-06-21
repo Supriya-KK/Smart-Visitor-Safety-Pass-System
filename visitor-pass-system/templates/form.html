@@ -10,7 +10,7 @@
   <form action="/submit" method="POST">
     Name: <input type="text" name="name" required><br>
     Phone: <input type="text" name="phone" pattern="[0-9]{10}" required><br>
-    Reason: <input type="text" name="reason" required><br>
+    <!--Reason: <input type="text" name="reason" required><br> -->
     Host Name: <input type="text" name="host" required><br>
   
     <label>Plant / Area to Visit:</label>
@@ -21,10 +21,51 @@
       <option value="Rolling Mill">Rolling Mill</option>
       <option value="Admin Office">Admin Office</option>
     </select><br>
-  
+    
+    <!-- Reason Dropdown -->
+    <label for="reason">Reason for Visit:</label>
+    <select name="reason" id="reason" required onchange="toggleDateFields()">
+      <option value="">-- Select --</option>
+      <option value="Interview">Interview</option>
+      <option value="Contractor">Contractor</option>
+      <option value="Intern">Intern</option>
+      <option value="Audit">Audit</option>
+      <option value="Delivery">Delivery</option>
+      <option value="College Visit">College Visit</option>
+      <option value="Other">Other</option>
+    </select>
+
+  <!-- Start and End Date fields -->
+    <div id="dateFields" style="display:none;">
+    <label for="start_date">Start Date:</label>
+    <input type="date" name="start_date" id="start_date">
+
+    <label for="end_date">End Date:</label>
+    <input type="date" name="end_date" id="end_date">
+    </div><br>
+
+    <script>
+      function toggleDateFields() {
+        const reason = document.getElementById("reason").value;
+        const dateFields = document.getElementById("dateFields");
+    
+        const needsDate = ["Contractor", "Intern", "College Visit", "Audit"];
+        if (needsDate.includes(reason)) {
+          dateFields.style.display = "block";
+        } else {
+          dateFields.style.display = "none";
+          // Optional: Clear values if not shown
+          document.getElementById("start_date").value = "";
+          document.getElementById("end_date").value = "";
+        }
+      }
+    </script>
+    
+
     <button type="submit">Submit</button>
   </form>
   {% include 'footer.html' %}
   
+
 </body>
 </html>
