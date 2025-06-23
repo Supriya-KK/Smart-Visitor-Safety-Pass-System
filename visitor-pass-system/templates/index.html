@@ -1,0 +1,11 @@
+{% set body_class = 'home-bg' %}
+{% include 'header.html' %}
+<main style="min-height: 80vh; position: relative;">
+    <div class="overlay"></div>
+    <div class="content">
+        <h1>Welcome to the Smart Visitor Safety Pass System</h1>
+        <p>Your safety is our priority. Please register to get started.</p>
+        <a href="{{ url_for('register') }}"><button class="register-btn">Register</button></a>
+    </div>
+</main>
+{% include 'footer.html' %} 

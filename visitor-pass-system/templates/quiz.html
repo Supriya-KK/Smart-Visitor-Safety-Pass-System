@@ -19,7 +19,7 @@
     </div>
 
     <!-- Instructions -->
-    <div class="instructions">
+    <div class="instructions{% if area == 'Admin Office' %} admin-office{% endif %}">
         <h3>Instructions</h3>
         <ul>
             {% for line in instructions %}
