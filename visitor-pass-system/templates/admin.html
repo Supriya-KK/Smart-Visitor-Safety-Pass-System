@@ -8,25 +8,6 @@
 
   {% include 'header.html' %}
 
-  <h2>Visitor Logs</h2>
-  <table border="1">
-    <tr>
-      <th>ID</th><th>Name</th><th>Phone</th><th>Host</th>
-      <th>Quiz</th><th>Status</th><th>Action</th>
-    </tr>
-    {% for row in data %}
-    <tr>
-      <td>{{ row[0] }}</td><td>{{ row[1] }}</td><td>{{ row[2] }}</td>
-      <td>{{ row[4] }}</td><td>{{ 'Yes' if row[5] else 'No' }}</td>
-      <td>{{ row[6] }}</td>
-      <td>
-        {% if row[6] != 'Checked In' %}
-          <a href="/checkin/{{ row[0] }}">Check In</a>
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
 <h2>Admin Dashboard - Visitor Logs</h2>
 
 <table>
@@ -41,7 +22,7 @@
       <th>Quiz</th>
       <th>Status</th>
       <th>Check-In Time</th>
-      <th>Check-Out Time</th>
+
       <th>Actions</th>
     </tr>
   </thead>
@@ -57,7 +38,7 @@
       <td>{{ '✅ Passed' if row[6] else '❌ Failed' }}</td>
       <td>{{ row[7] }}</td>
       <td>{{ row[8] if row[8] else '-' }}</td>
-      <td>{{ row[9] if row[9] else '-' }}</td>
+      <!--<td>{{ row[9] if row[9] else '-' }}</td>-->
       <td>
         {% if row[7] == 'Not Checked In' %}
           <a href="/checkin/{{ row[0] }}"><button>Check In</button></a>
@@ -67,6 +48,7 @@
           ✔ Done
         {% endif %}
       </td>
+      
     </tr>
     {% endfor %}
   </tbody>

@@ -37,15 +37,16 @@ def update_schema():
     except sqlite3.OperationalError:
         pass
     try:
-        c.execute("ALTER TABLE visitors ADD COLUMN start_date TEXT")
+        c.execute("ALTER TABLE visitors ADD COLUMN start_date TEXT")   # ✅ Add this line
     except sqlite3.OperationalError:
         pass
     try:
-        c.execute("ALTER TABLE visitors ADD COLUMN end_date TEXT")
+        c.execute("ALTER TABLE visitors ADD COLUMN end_date TEXT")     # ✅ Add this line
     except sqlite3.OperationalError:
         pass
     conn.commit()
     conn.close()
+
 
 
 
@@ -69,17 +70,17 @@ def submit():
     reason = request.form['reason']
     host = request.form['host']
     area = request.form['area']
-    start_date = request.form['start_date']
-    end_date = request.form['end_date']
+    start_date = request.form.get('start_date') or None
+    end_date = request.form.get('end_date') or None
 
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("""
-        INSERT INTO visitors 
-        (name, phone, reason, host, area, quiz_passed, checkin_status, checkin_time, checkout_time, start_date, end_date) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (name, phone, reason, host, area, 0, 'Not Checked In', None, None, start_date, end_date))
+    INSERT INTO visitors 
+    (name, phone, reason, host, area, quiz_passed, checkin_status, checkin_time, checkout_time, start_date, end_date) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+""", (name, phone, reason, host, area, 0, 'Not Checked In', None, None, start_date, end_date))
 
     
     visitor_id = c.lastrowid
