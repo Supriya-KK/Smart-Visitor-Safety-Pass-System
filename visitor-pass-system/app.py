@@ -290,6 +290,19 @@ def handle_checkin(visitor_id):  # 👈 new name
 
     return redirect(url_for('profile', visitor_id=visitor_id))
 
+@app.template_filter('datetimeformat')
+def datetimeformat(value):
+    if not value:
+        return ''
+    try:
+        # Try parsing as YYYY-MM-DD or YYYY-MM-DD HH:MM:SS
+        if len(value) == 10:
+            dt = datetime.strptime(value, '%Y-%m-%d')
+        else:
+            dt = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+        return dt.strftime('%d-%m-%Y')
+    except Exception:
+        return value
 
 if __name__ == '__main__':
     app.run(debug=True)

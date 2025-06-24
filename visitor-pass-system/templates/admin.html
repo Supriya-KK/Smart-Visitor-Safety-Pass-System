@@ -18,7 +18,8 @@
       <th>Phone</th>
       <th>Host</th>
       <th>Reason</th>
-      <th>Status</th>
+      <th>Department</th>
+      <th>Valid up to</th>
     </tr>
   </thead>
   <tbody>
@@ -30,6 +31,7 @@
       <td>{{ row[4] }}</td>
       <td>{{ row[3] }}</td>
       <td>{{ row[7] }}</td>
+      <td>{% if row[11] %}{{ row[11]|datetimeformat }}{% else %}N/A{% endif %}</td>
     </tr>
     {% endfor %}
   </tbody>
