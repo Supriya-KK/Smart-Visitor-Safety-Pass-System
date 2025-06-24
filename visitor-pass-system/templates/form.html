@@ -42,7 +42,7 @@
 
     <div class="form-group">
       <label for="reason">Reason for Visit:</label>
-      <select name="reason" id="reason" required onchange="toggleDateFields()">
+      <select name="reason" id="reason" required onchange="toggleDateFields(); toggleOtherReason();">
         <option value="">-- Select --</option>
         <option value="Interview">Interview</option>
         <option value="Contractor">Contractor</option>
@@ -62,6 +62,11 @@
       <input type="date" name="end_date" id="end_date">
     </div>
 
+    <div id="otherReasonField" class="form-group" style="display:none;">
+      <label for="other_reason">Please specify your reason:</label>
+      <input type="text" name="other_reason" id="other_reason">
+    </div>
+
     <button type="submit">Submit</button>
   </form>
 
@@ -77,6 +82,18 @@
         dateFields.style.display = "none";
         document.getElementById("start_date").value = "";
         document.getElementById("end_date").value = "";
+      }
+    }
+    function toggleOtherReason() {
+      const reason = document.getElementById("reason").value;
+      const otherField = document.getElementById("otherReasonField");
+      if (reason === "Other") {
+        otherField.style.display = "block";
+        document.getElementById("other_reason").setAttribute("required", "required");
+      } else {
+        otherField.style.display = "none";
+        document.getElementById("other_reason").removeAttribute("required");
+        document.getElementById("other_reason").value = "";
       }
     }
   </script>

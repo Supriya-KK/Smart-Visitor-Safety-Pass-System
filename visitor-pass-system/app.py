@@ -72,11 +72,13 @@ def submit():
     name = request.form['name']
     phone = request.form['phone']
     reason = request.form['reason']
+    # Use the custom reason if 'Other' is selected
+    if reason == 'Other':
+        reason = request.form.get('other_reason', '').strip() or 'Other'
     host = request.form['host']
     area = request.form['area']
     start_date = request.form.get('start_date') or None
     end_date = request.form.get('end_date') or None
-
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
@@ -86,7 +88,6 @@ def submit():
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 """, (name, phone, reason, host, area, 0, 'Not Checked In', None, None, start_date, end_date))
 
-    
     visitor_id = c.lastrowid
     conn.commit()
     conn.close()

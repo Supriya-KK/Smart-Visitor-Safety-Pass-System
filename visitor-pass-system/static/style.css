@@ -356,3 +356,35 @@ body:not(.home-bg) .page-content {
 .admin-login-box p[style*="color: red"] {
     margin-bottom: 10px;
 }
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+.nav-links a,
+.nav-links form button {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.08em;
+    padding: 7px 16px;
+    border-radius: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+}
+.nav-links form {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+.nav-links a:hover,
+.nav-links form button:hover {
+    background-color: #3498db;
+}
