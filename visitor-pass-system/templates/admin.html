@@ -19,7 +19,11 @@
       <th>Host</th>
       <th>Reason</th>
       <th>Department</th>
+<<<<<<< HEAD
       <th>Valid up to</th>
+=======
+      <th>Valid Upto</th>
+>>>>>>> ea25a4e (changed database info)
     </tr>
   </thead>
   <tbody>
@@ -28,10 +32,22 @@
       <td>{{ row[0] }}</td>
       <td>{{ row[1] }}</td>
       <td>{{ row[2] }}</td>
-      <td>{{ row[4] }}</td>
       <td>{{ row[3] }}</td>
+<<<<<<< HEAD
       <td>{{ row[7] }}</td>
       <td>{% if row[11] %}{{ row[11]|datetimeformat }}{% else %}N/A{% endif %}</td>
+=======
+      <td>{{ row[4] }}</td>
+      <td>{{ row[5] }}</td>
+      <td>
+        {% if row[7] %}
+          {{ row[7]|datetimeformat }}
+        {% else %}
+          None
+        {% endif %}
+      </td>
+      
+>>>>>>> ea25a4e (changed database info)
     </tr>
     {% endfor %}
   </tbody>

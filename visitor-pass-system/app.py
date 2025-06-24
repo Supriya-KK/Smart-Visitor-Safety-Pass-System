@@ -17,10 +17,12 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         phone TEXT,
+        host TEXT, 
         reason TEXT,
-        host TEXT,
-        quiz_passed INTEGER,
-        checkin_status TEXT
+        department TEXT,
+        start_date TEXT,
+        end_date TEXT
+
     )''')
     conn.commit()
     conn.close()
@@ -29,25 +31,11 @@ def update_schema():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     try:
-        c.execute("ALTER TABLE visitors ADD COLUMN checkin_time TEXT")
+        c.execute("ALTER TABLE visitors ADD COLUMN quiz_passed INTEGER DEFAULT 0")
     except sqlite3.OperationalError:
-        pass
-    try:
-        c.execute("ALTER TABLE visitors ADD COLUMN checkout_time TEXT")
-    except sqlite3.OperationalError:
-        pass
-    try:
-        c.execute("ALTER TABLE visitors ADD COLUMN start_date TEXT")   # ✅ Add this line
-    except sqlite3.OperationalError:
-        pass
-    try:
-        c.execute("ALTER TABLE visitors ADD COLUMN end_date TEXT")     # ✅ Add this line
-    except sqlite3.OperationalError:
-        pass
+        pass  # Column already exists
     conn.commit()
     conn.close()
-
-
 
 
 @app.route('/')
@@ -63,10 +51,6 @@ def about():
     return render_template('about.html')
 
 
-#@app.route('/profile')
-#def profile():
- #   return "<h2>Admin Profile</h2><p>Welcome, Admin!</p>"
-
 @app.route('/submit', methods=['POST'])
 def submit():
     name = request.form['name']
@@ -76,7 +60,7 @@ def submit():
     if reason == 'Other':
         reason = request.form.get('other_reason', '').strip() or 'Other'
     host = request.form['host']
-    area = request.form['area']
+    department = request.form['department']
     start_date = request.form.get('start_date') or None
     end_date = request.form.get('end_date') or None
 
@@ -84,18 +68,18 @@ def submit():
     c = conn.cursor()
     c.execute("""
     INSERT INTO visitors 
-    (name, phone, reason, host, area, quiz_passed, checkin_status, checkin_time, checkout_time, start_date, end_date) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-""", (name, phone, reason, host, area, 0, 'Not Checked In', None, None, start_date, end_date))
+    (name, phone, host, reason, department, start_date, end_date) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+""", (name, phone, host, reason, department, start_date, end_date))
 
     visitor_id = c.lastrowid
     conn.commit()
     conn.close()
 
-    # 👇 Save visitor_id to session
+    #  Save visitor_id to session
     session['visitor_id'] = visitor_id
 
-    # 👇 Redirect to profile page first
+    #  Redirect to profile page first
     return redirect(url_for('quiz', visitor_id=visitor_id))
 
 @app.route('/admin')
@@ -133,14 +117,15 @@ def quiz(visitor_id):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
 
-    c.execute("SELECT area FROM visitors WHERE id = ?", (visitor_id,))
+    c.execute("SELECT department FROM visitors WHERE id = ?", (visitor_id,))
     row = c.fetchone()
-    area = row[0] if row else None
+    department = row[0] if row else None
 
-    if not area:
-        return "Area not found for this visitor", 404
 
-    area_path_map = {
+    if not department:
+        return "department not found for this visitor", 404
+
+    department_path_map = {
         "Power Plant": "PPE/Power-Plant/",
         "Rolling Mill": "PPE/Rolling Mill/",
         "Steel Melting Shop": "PPE/Steel-Melting-Shop/",
@@ -184,7 +169,7 @@ def quiz(visitor_id):
         "Will you report unsafe conditions?"
     ]
 
-    image_dir = area_path_map.get(area)
+    image_dir = department_path_map.get(department)
     static_folder = os.path.join(app.root_path, "static")
     full_image_path = os.path.join(static_folder, image_dir) if image_dir else ""
 
@@ -204,22 +189,15 @@ def quiz(visitor_id):
             return redirect(url_for("generate_qr", visitor_id=visitor_id))
         else:
             conn.close()
-            return render_template("quiz_fail.html", area=area, visitor_id=visitor_id)
+            return render_template("quiz_fail.html", area=department, visitor_id=visitor_id)
 
     conn.close()
-    instructions = instruction_map.get(area, [])
-    return render_template("quiz.html", visitor_id=visitor_id, area=area,
+    instructions = instruction_map.get(department, [])
+    return render_template("quiz.html", visitor_id=visitor_id, area=department,
                            ppe_images=ppe_images, instructions=instructions, questions=questions)
 
 
-    # @app.route('/qr/<int:visitor_id>')
-    # def generate_qr(visitor_id):
-    #     img = qrcode.make(f"VisitorID:{visitor_id}")
-    #     buf = io.BytesIO()
-    #     img.save(buf)
-    #     buf.seek(0)
-    #     return send_file(buf, mimetype='image/png')
-
+    
 @app.route('/qr/<int:visitor_id>')
 def generate_qr(visitor_id):
     return redirect(url_for('visitor_profile', visitor_id=visitor_id))
@@ -245,7 +223,7 @@ def visitor_profile(visitor_id):
 def handle_checkout(visitor_id):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    checkout_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    checkout_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     c.execute("UPDATE visitors SET status='Checked Out', checkout_time=? WHERE id=?", (checkout_time, visitor_id))
     conn.commit()
     conn.close()
@@ -262,10 +240,10 @@ def debug():
 
 @app.route('/qr_image/<int:visitor_id>')
 def qr_image(visitor_id):
-    # 👇 QR should link to checkin route
+    # QR should link to checkin route
     checkin_url = url_for('handle_checkin', visitor_id=visitor_id, _external=True)
 
-    # ✅ Generate QR code with that URL
+    # Generate QR code with that URL
     img = qrcode.make(checkin_url)
 
     # Convert QR to byte stream for displaying
@@ -276,12 +254,12 @@ def qr_image(visitor_id):
     return send_file(buf, mimetype='image/png')
 
 @app.route('/checkin/<int:visitor_id>')
-def handle_checkin(visitor_id):  # 👈 new name
+def handle_checkin(visitor_id): 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
 
     from datetime import datetime
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    now = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     c.execute("UPDATE visitors SET checkin_time = ?, checkin_status = ? WHERE id = ?", 
               (now, 'Checked In', visitor_id))
 
@@ -295,14 +273,24 @@ def datetimeformat(value):
     if not value:
         return ''
     try:
+<<<<<<< HEAD
         # Try parsing as YYYY-MM-DD or YYYY-MM-DD HH:MM:SS
         if len(value) == 10:
             dt = datetime.strptime(value, '%Y-%m-%d')
         else:
             dt = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+=======
+        
+        if len(value) == 10:
+            dt = datetime.strptime(value, '%d-%m-%Y')
+        else:
+            dt = datetime.strptime(value, '%d-%m-%Y %H:%M:%S')
+>>>>>>> ea25a4e (changed database info)
         return dt.strftime('%d-%m-%Y')
     except Exception:
         return value
 
 if __name__ == '__main__':
+    init_db()
+    update_schema()
     app.run(debug=True)
