@@ -245,7 +245,7 @@ def qr_image(visitor_id):
 
     # Generate QR code with that URL
     img = qrcode.make(checkin_url)
-
+    
     # Convert QR to byte stream for displaying
     buf = io.BytesIO()
     img.save(buf)
@@ -273,19 +273,11 @@ def datetimeformat(value):
     if not value:
         return ''
     try:
-<<<<<<< HEAD
-        # Try parsing as YYYY-MM-DD or YYYY-MM-DD HH:MM:SS
-        if len(value) == 10:
-            dt = datetime.strptime(value, '%Y-%m-%d')
-        else:
-            dt = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-=======
         
         if len(value) == 10:
             dt = datetime.strptime(value, '%d-%m-%Y')
         else:
             dt = datetime.strptime(value, '%d-%m-%Y %H:%M:%S')
->>>>>>> ea25a4e (changed database info)
         return dt.strftime('%d-%m-%Y')
     except Exception:
         return value
