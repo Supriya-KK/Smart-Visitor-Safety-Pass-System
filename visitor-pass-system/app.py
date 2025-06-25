@@ -20,9 +20,9 @@ def init_db():
         host TEXT, 
         reason TEXT,
         department TEXT,
+        quiz_passed INTEGER DEFAULT 0,
         start_date TEXT,
         end_date TEXT
-
     )''')
     conn.commit()
     conn.close()
@@ -68,9 +68,9 @@ def submit():
     c = conn.cursor()
     c.execute("""
     INSERT INTO visitors 
-    (name, phone, host, reason, department, start_date, end_date) 
+    (name, phone, host, department, reason, start_date, end_date) 
     VALUES (?, ?, ?, ?, ?, ?, ?)
-""", (name, phone, host, reason, department, start_date, end_date))
+""", (name, phone, host, department, reason, start_date, end_date))
 
     visitor_id = c.lastrowid
     conn.commit()
@@ -97,7 +97,6 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # Simple static check (replace with DB check later)
         if username == 'admin' and password == 'admin123':
             session['user'] = username
             return redirect(url_for('admin'))
@@ -120,7 +119,6 @@ def quiz(visitor_id):
     c.execute("SELECT department FROM visitors WHERE id = ?", (visitor_id,))
     row = c.fetchone()
     department = row[0] if row else None
-
 
     if not department:
         return "department not found for this visitor", 404
@@ -240,17 +238,12 @@ def debug():
 
 @app.route('/qr_image/<int:visitor_id>')
 def qr_image(visitor_id):
-    # QR should link to checkin route
-    checkin_url = url_for('handle_checkin', visitor_id=visitor_id, _external=True)
-
-    # Generate QR code with that URL
-    img = qrcode.make(checkin_url)
-    
-    # Convert QR to byte stream for displaying
+    # QR should link directly to the quick pass
+    quickpass_url = url_for('quickpass', visitor_id=visitor_id, _external=True)
+    img = qrcode.make(quickpass_url)
     buf = io.BytesIO()
     img.save(buf)
     buf.seek(0)
-
     return send_file(buf, mimetype='image/png')
 
 @app.route('/checkin/<int:visitor_id>')
@@ -268,19 +261,67 @@ def handle_checkin(visitor_id):
 
     return redirect(url_for('profile', visitor_id=visitor_id))
 
+@app.route('/recreate_database')
+def recreate_database():
+    if session.get('user') != 'admin':
+        return 'Access denied', 403
+    
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    
+    # Drop the existing table
+    c.execute('DROP TABLE IF EXISTS visitors')
+    
+    # Create new table with correct schema
+    c.execute('''CREATE TABLE visitors (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        phone TEXT,
+        host TEXT, 
+        reason TEXT,
+        department TEXT,
+        quiz_passed INTEGER DEFAULT 0,
+        start_date TEXT,
+        end_date TEXT
+    )''')
+    
+    conn.commit()
+    conn.close()
+    return 'Database recreated with correct schema!'
+
+@app.route('/check_schema')
+def check_schema():
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("PRAGMA table_info(visitors)")
+    columns = c.fetchall()
+    conn.close()
+    return {'columns': columns}
+
 @app.template_filter('datetimeformat')
 def datetimeformat(value):
     if not value:
         return ''
     try:
-        
+        # Try parsing as YYYY-MM-DD or YYYY-MM-DD HH:MM:SS
         if len(value) == 10:
-            dt = datetime.strptime(value, '%d-%m-%Y')
+            dt = datetime.strptime(value, '%Y-%m-%d')
         else:
-            dt = datetime.strptime(value, '%d-%m-%Y %H:%M:%S')
+            dt = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
         return dt.strftime('%d-%m-%Y')
     except Exception:
         return value
+
+@app.route('/quickpass/<int:visitor_id>')
+def quickpass(visitor_id):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("SELECT * FROM visitors WHERE id = ?", (visitor_id,))
+    visitor = c.fetchone()
+    conn.close()
+    if not visitor:
+        return "<h3>Visitor not found.</h3>"
+    return render_template('quickpass.html', visitor=visitor)
 
 if __name__ == '__main__':
     init_db()

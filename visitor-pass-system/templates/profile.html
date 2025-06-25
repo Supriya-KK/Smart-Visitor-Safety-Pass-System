@@ -5,31 +5,11 @@
   <h2>🎫 Your Visitor Pass</h2>
   <h3>👤 {{ visitor[1] }}</h3>
   <p>📱 Phone: {{ visitor[2] }}</p>
-<<<<<<< HEAD
-  <p>🧑‍💼 Host: {{ visitor[4] }}</p>
-  <p>📍 Area: {{ visitor[7] }}</p>
-  <p>📝 Reason: {{ visitor[3] }}</p>
-  <p>📅 Valid up to: {% if visitor[11] %}{{ visitor[11]|datetimeformat }}{% else %}N/A{% endif %}</p>
-  <!--<p>🕑 Check-In: 
-    {% if visitor[8] %}
-      {{ visitor[8] }}
-    {% else %}
-      Pending
-    {% endif %}
-  </p>-->
-  
-  <!--<p>Status: {{ 'Checked In at ' + checkin_time if checkin_time else 'Pending' }}</p> -->
-
-=======
-  <p>👨‍⚖️ Host: {{ visitor[3] }}</p>
-  <p>📍 Department: {{ visitor[5] }}</p>
-  <p>📝 Reason: {{ visitor[4] }}</p>
-  <p>📅 Valid up to: {% if visitor[11] %}{{ visitor[11]|datetimeformat }}{% else %}N/A{% endif %}</p>
->>>>>>> ea25a4e (changed database info)
-
-
+  <p>🧑‍💼 Host: {{ visitor[3] }}</p>
+  <p>📍 Department: {{ visitor[4] }}</p>
+  <p>📝 Reason: {{ visitor[5] }}</p>
+  <p>📅 Valid up to: {% if visitor[7] %}{{ visitor[7]|datetimeformat }}{% else %}N/A{% endif %}</p>
   <img src="{{ url_for('qr_image', visitor_id=visitor[0]) }}">
-
 </div>
 
 <div class="actions">

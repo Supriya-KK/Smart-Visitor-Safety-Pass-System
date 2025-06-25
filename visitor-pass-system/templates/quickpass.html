@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quick Visitor Pass</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body { background: #f4f6f8; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .quickpass-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+            padding: 36px 48px;
+            text-align: center;
+            min-width: 320px;
+        }
+        .quickpass-card h2 { color: #2c3e50; margin-bottom: 18px; }
+        .quickpass-card p { font-size: 1.15em; margin: 12px 0; }
+    </style>
+</head>
+<body>
+    <div class="quickpass-card">
+        <h2>Visitor Quick Pass</h2>
+        <p><strong>Name:</strong> {{ visitor[1] }}</p>
+        <p><strong>Department:</strong> {{ visitor[4] }}</p>
+        <p><strong>Valid up to:</strong> {% if visitor[7] %}{{ visitor[7]|datetimeformat }}{% else %}N/A{% endif %}</p>
+    </div>
+</body>
+</html> 
